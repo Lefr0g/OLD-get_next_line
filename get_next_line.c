@@ -6,7 +6,7 @@
 /*   By: amulin <amulin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/12/10 14:09:04 by amulin            #+#    #+#             */
-/*   Updated: 2014/12/11 17:30:54 by amulin           ###   ########.fr       */
+/*   Updated: 2014/12/11 18:22:13 by amulin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	get_next_line(int const fd, char **line)
 {
 	ssize_t		ret;
 	char		buf[BUFF_SIZE];
-	static char	*keep;
+	static char	keep[BUFF_SIZE + 1];
 	char		*tmp;
 	static int	lineindex = 0;
 	int			offset;
@@ -43,14 +43,16 @@ int	get_next_line(int const fd, char **line)
 		if (flag)
 			buf[offset] = '\0';
 		tmp = ft_strjoin(keep, buf);
-		ft_strdel(&keep);
-		keep = tmp;
+		ft_strclr(keep);
+		ft_strcpy(keep,tmp);
 		if (ret == 0)
 //			Lecture terminee
 			return (0);
 	}
 	if (flag)
-	{
+	{	
+		line[lineindex] = (char*)malloc(sizeof(char) * offset);
+		ft_strcpy(line[lineindex], buf);
 		lineindex++;
 		ft_strdel(&tmp);
 		return (1);

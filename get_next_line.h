@@ -6,7 +6,7 @@
 /*   By: amulin <amulin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/12/10 14:06:47 by amulin            #+#    #+#             */
-/*   Updated: 2014/12/11 12:34:13 by amulin           ###   ########.fr       */
+/*   Updated: 2014/12/11 18:20:21 by amulin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 # include "libft.h"
 
-# define BUFF_SIZE 142
+# define BUFF_SIZE 42
 
 int	get_next_line(int const fd, char **line);
 
