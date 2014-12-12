@@ -6,29 +6,61 @@
 /*   By: amulin <amulin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/12/10 14:09:04 by amulin            #+#    #+#             */
-/*   Updated: 2014/12/11 18:22:13 by amulin           ###   ########.fr       */
+/*   Updated: 2014/12/12 16:37:34 by amulin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	get_next_line(int const fd, char **line)
+static char		*my_strextend(char *a, char *b)
+{
+	char	*c;
+
+	c = ft_strjoin(a, b);
+	ft_strdel(&a);
+	a = c;
+	ft_strdel(&c);
+	return (a);
+}
+
+static size_t	my_strlenendofline(const char *s)
+{
+	size_t	i;
+
+	i = 0;
+	while (s[i] != '\n' && s[i] != '\0')
+		i++;
+	return (i);
+}
+
+static size_t	my_strlen(const char *s)
+{
+	size_t	i;
+
+	i = 0;
+	while (s[i] != '\0')
+		i++;
+	return (i);
+}
+
+int				get_next_line(int const fd, char **line)
 {
 	ssize_t		ret;
-	char		buf[BUFF_SIZE];
-	static char	keep[BUFF_SIZE + 1];
+	char		buf[BUFF_SIZE + 1];
+	static char	*keep;
 	char		*tmp;
 	static int	lineindex = 0;
-	int			offset;
+	size_t		i;
 	int			flag;
 
 //	Check erreur sur parametres
 	if (line == NULL || fd < 0)
 		return (-1);
-// Initialisation compteur et flag
+//	Initialisation compteur et flag
 	flag = 0;
-	offset = 0;
-//	Confition initialisation keep[] sur premiere passe
+	i = 0;
+	tmp = my_strextend(tmp, keep);
+//	Initialisation keep[] sur premiere passe
 	if (lineindex == 0)
 		*keep = '\0';
 //	Boucle read() principale
@@ -37,34 +69,39 @@ int	get_next_line(int const fd, char **line)
 		if (ret == -1)
 //			Erreur
 			return (-1);
-//		Check si \n dans buf | retenir position
+		buf[ret] = '\0';
+//		Check si \n dans buf | si oui, lever le flag
 		if (ret > 0)
 		{
-			while (buf[offset] != '\n' && offset <= BUFF_SIZE)
+			i = 0;
+			while (buf[i] != '\n' && i <= BUFF_SIZE)
 			{
-				offset++;
-				if (buf[offset] == '\n')
+				i++;
+				if (buf[i] == '\n')
 					flag = 1;
 			}
-//			Remplacer \n par \0 si \n prealablement detecte
-			if (flag)
-				buf[offset] = '\0';
-//			Concatenation buf[] derriere keep[] dans tmp[]. Buf peut ne pas contenir \n
-			tmp = ft_strjoin(keep, buf);
-//			Clear de keep[]
-			ft_strclr(keep);
-//			Copie de tmp[] dans keep[]
-			ft_strcpy(keep,tmp);
+//		Sauvegarde du buf dans tmp
+		my_strextend(tmp, buf);
 		}
 		if (ret == 0)
 //			Lecture terminee
 			return (0);
 	}
-	if (flag)
+	if (flag) // ou EOF
 	{
-		line[lineindex] = (char*)malloc(sizeof(char) * offset);
-		ft_strcpy(line[lineindex], buf);
+		i = 0;
+//		Trouver position du premier \n ou \0 dans buf
+		i = my_strlenendofline(tmp);
+//		Malloc de la chaine finale selon la bonne longueur
+		line[lineindex] = (char*)malloc(sizeof(char) * (i + 1));
+//		Copie de tmp jusqu'a /n exclus dans la chaine finale
+		ft_strncpy(line[lineindex], tmp, i);
+//		Fermeture de la chaine finale
+		line[lineindex][i] = '\0';
+//		Copie du reste dams keep
+		keep = ft_strsub(tmp, (unsigned int)i, my_strlen(&tmp[i + 1]));
 		lineindex++;
+//		Liberation de la memoire de tmp
 		ft_strdel(&tmp);
 		return (1);
 	}
