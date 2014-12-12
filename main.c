@@ -25,18 +25,24 @@ int	main(int argc, char **argv)
 	char	mainbuf[BUFF_SIZE + 1];
 
 	if (argc == 1)
-		ft_putstr("argc = 1");
-	if (argc != 1)
+		ft_putstr("Main : Please add a filename\n");
+	if (argc == 2)
 	{
 		ft_putstr("argc = ");
 		ft_putnbr(argc);
 	}
+	if (argc > 2)
+	{
+		ft_putstr("Main : Too many arguments, only ");
+		ft_putstr(argv[1]);
+		ft_putstr(" will be considered\n");
+	}
 	argv = argv;
 	ft_putchar('\n');
-	fd = open("fichier0", O_RDONLY);
+	fd = open(argv[1], O_RDONLY);
 	if (fd == -1)
 	{
-		ft_putstr("Main : open() error\n");
+		ft_putstr("Main : open() error. Please check the filename\n");
 		return (-1);
 	}
 	else
