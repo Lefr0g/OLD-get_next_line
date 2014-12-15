@@ -59,6 +59,7 @@ int				get_next_line(int const fd, char **line)
 //	Initialisation compteur et flag
 	flag = 0;
 	i = 0;
+	tmp = (char*)malloc(sizeof(char) * 2);
 	tmp = my_strextend(tmp, keep);
 //	Initialisation keep[] sur premiere passe
 	if (lineindex == 0)
@@ -74,21 +75,21 @@ int				get_next_line(int const fd, char **line)
 		if (ret > 0)
 		{
 			i = 0;
-			while (buf[i] != '\n' && i <= BUFF_SIZE)
+			while (buf[i] != '\n' && buf[i] != '\0')
 			{
 				i++;
 				if (buf[i] == '\n')
 					flag = 1;
 			}
 //		Sauvegarde du buf dans tmp
-		my_strextend(tmp, buf);
+		tmp = my_strextend(tmp, buf);
 		}
 		if (ret == 0)
 //			Lecture terminee
 			return (0);
 	}
-	if (flag) // ou EOF
-	{
+//	if (flag) // ou EOF
+//	{
 		i = 0;
 //		Trouver position du premier \n ou \0 dans buf
 		i = my_strlenendofline(tmp);
@@ -104,8 +105,8 @@ int				get_next_line(int const fd, char **line)
 //		Liberation de la memoire de tmp
 		ft_strdel(&tmp);
 		return (1);
-	}
-	else
-		return (2);
+//	}
+//	else
+//		return (2);
 //		For debug only. to be removed.
 }
