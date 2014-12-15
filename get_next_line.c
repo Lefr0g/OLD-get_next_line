@@ -12,26 +12,42 @@
 
 #include "get_next_line.h"
 
-void	my_extend(char *dest, char *src)
+static void	my_extend(char **dst, char **src)
 {
 	char	*buf;
 
-	buf = (char*)malloc(sizeof(char) * (ft_strlen(dest) + 1));
-	ft_strcpy(buf, dest);
-	free(dest);
-	dest = (char*)malloc(sizeof(char) * (ft_strlen(buf) + ft_strlen(src) + 1));
-	ft_strcpy(dest, buf);
-	ft_strcat(dest, src);
+	buf = (char*)malloc(sizeof(char) * (ft_strlen(*dst) + 1));
+	ft_strcpy(buf, *dst);
+	free(*dst);
+	*dst = (char*)malloc(sizeof(char) * (ft_strlen(buf) + ft_strlen(*src) + 1));
+	ft_strcpy(*dst, buf);
+	ft_strcat(*dst, *src);
 	free(buf);
 }
 
-int	get_next_line(int const fd, char **line)
+static int	my_check_eol(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i] != '\0')
+	{
+		if (str[i] == '\n')
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
+int			get_next_line(int const fd, char **line)
 {
 	static char	*keep;
 	char		*tmp;
 	char		*buf;
 	size_t		ret;
 	int			flag;
+	int			lentoeol;
+	int			remain;
 	
 	if (keep)
 	{
@@ -48,6 +64,17 @@ int	get_next_line(int const fd, char **line)
 	while ((ret = read(fd, buf, BUFF_SIZE)) && !flag)
 	{
 		buf(BUFF_SIZE) = '\0';
-		my_extend(tmp, buf);
+		my_extend(&tmp, &buf);
+		if ((lentoeol = my_check_eol(tmp)) >= 0)
+			flag = 1;
 	}
+	line = (char*)malloc(sizeof(char) * lentoeol);
+	ft_strncpy(*line, tmp, lentoeol + 1);
+	*line[lentoeol] = '\0';
+	free(keep);
+	remain = ft_strlen(tmp) - (size_t)lentoeol;
+	keep = (char*)malloc(sizeof(char) * (remain + 1));
+	ft_strncpy(keep, &tmp(lentoeol), remain + 1);
+	free(buf);
+	free(tmp);
 }
