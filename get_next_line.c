@@ -44,7 +44,7 @@ int			get_next_line(int const fd, char **line)
 	static char	*keep;
 	char		*tmp;
 	char		*buf;
-	size_t		ret;
+	ssize_t		ret;
 	int			flag;
 	int			lentoeol;
 	int			remain;
@@ -67,20 +67,20 @@ int			get_next_line(int const fd, char **line)
 	{
 		if (ret == -1)
 			return (-1);
-		buf(BUFF_SIZE) = '\0';
+		buf[BUFF_SIZE] = '\0';
 		my_extend(&tmp, &buf);
 		if ((lentoeol = my_check_eol(tmp)) >= 0)
 			flag = 1;
 	}
 	if (ret == 0)
 		return (0);
-	line = (char*)malloc(sizeof(char) * lentoeol);
+	*line = (char*)malloc(sizeof(char) * lentoeol);
 	ft_strncpy(*line, tmp, lentoeol + 1);
 	*line[lentoeol] = '\0';
 	free(keep);
 	remain = ft_strlen(tmp) - (size_t)lentoeol;
 	keep = (char*)malloc(sizeof(char) * (remain + 1));
-	ft_strncpy(keep, &tmp(lentoeol), remain + 1);
+	ft_strncpy(keep, &tmp[lentoeol], remain + 1);
 	free(buf);
 	free(tmp);
 	return (1);
