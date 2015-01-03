@@ -19,10 +19,12 @@ static char	*my_extend(char **dst, char **src)
 
 	buf = (char*)malloc(sizeof(char) * (ft_strlen(*dst) + 1));
 	ft_strcpy(buf, *dst);
+	printf(">> my_extend : about to free(*dst) at %p\n", *dst);
 	free(*dst);
 	*dst = (char*)malloc(sizeof(char) * (ft_strlen(buf) + ft_strlen(*src) + 1));
 	ft_strcpy(*dst, buf);
 	*dst = ft_strcat(*dst, *src);
+	printf(">> my_extend : about to free(buf) at %p\n", buf);
 	free(buf);
 	return (*dst);
 }
@@ -66,6 +68,7 @@ int			get_next_line(int const fd, char **line)
 		tmp = (char*)malloc(sizeof(char) * (BUFF_SIZE + 1));
 		ft_bzero(tmp, BUFF_SIZE + 1);
 	}
+	printf(">> tmp = %s at %p\n", tmp, tmp);
 	buf = (char*)malloc(sizeof(char) * (BUFF_SIZE + 1));
 	flag = 0;
 	while (!flag && (ret = read(fd, buf, BUFF_SIZE)))
@@ -90,6 +93,7 @@ int			get_next_line(int const fd, char **line)
 //	printf(">> tmp = %s\n", tmp);
 	ft_strncpy(lline, tmp, lentoeol);
 	lline[lentoeol] = '\0';
+	printf(">> keep = %s at %p\n", keep, keep);
 	free(keep);
 	remain = ft_strlen(tmp) - lentoeol;
 	printf(">> ft_strlen(tmp) = %zd, lentoeol = %d, tmp = %s\n", ft_strlen(tmp), lentoeol, tmp);
@@ -98,10 +102,13 @@ int			get_next_line(int const fd, char **line)
 /*	printf("\n>> tmp = %s", tmp);
 	printf(">> keep = %s\n", keep);
 	printf(">> lline = %s\n", lline);
-*/	free(buf);
+*/	printf(">> buf = %s at %p\n", buf, buf);
+	free(buf);
 	if (ret == 0 && my_check_eol(tmp) == -1)
 		return (0);
+	printf(">> tmp = %s at %p\n", tmp, tmp);
 	ft_bzero(tmp, ft_strlen(tmp));
+	printf(">> tmp = %s at %p\n", tmp, tmp);
 	free(tmp);
 	return (1);
 }

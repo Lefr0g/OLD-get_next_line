@@ -29,7 +29,10 @@ int	main(int argc, char **argv)
 	if (!line)
 		ft_putstr("Main : malloc line fail.");
 	if (argc == 1)
+	{
 		ft_putstr("Main : Please add a filename\n");
+		return (0);
+	}
 	if (argc == 2)
 	{
 		ft_putstr("argc = ");
