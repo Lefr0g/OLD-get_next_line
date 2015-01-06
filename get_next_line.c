@@ -6,7 +6,7 @@
 /*   By: amulin <amulin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/12/10 14:09:04 by amulin            #+#    #+#             */
-/*   Updated: 2014/12/17 19:20:34 by amulin           ###   ########.fr       */
+/*   Updated: 2015/01/06 12:52:02 by amulin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,17 @@ static char	*my_extend(char **dst, char **src)
 	char	*buf;
 
 	buf = (char*)malloc(sizeof(char) * (ft_strlen(*dst) + 1));
+	if (!buf)
+		return (NULL);
 	ft_strcpy(buf, *dst);
-	printf(">> my_extend : about to free(*dst) at %p\n", *dst);
+//	printf(">> my_extend : about to free(*dst) at %p\n", *dst);
 	free(*dst);
 	*dst = (char*)malloc(sizeof(char) * (ft_strlen(buf) + ft_strlen(*src) + 1));
+	if (!*dst)
+		return (NULL);
 	ft_strcpy(*dst, buf);
 	*dst = ft_strcat(*dst, *src);
-	printf(">> my_extend : about to free(buf) at %p\n", buf);
+//	printf(">> my_extend : about to free(buf) at %p\n", buf);
 	free(buf);
 	return (*dst);
 }
@@ -57,58 +61,67 @@ int			get_next_line(int const fd, char **line)
 	if (fd < 0 || line == NULL)
 		return (-1);
 	lline = *line;
-	free(lline);
+//	free(lline);
 	if (keep)
 	{
 		tmp = (char*)malloc(sizeof(char) * (ft_strlen(keep) + 1));
+		if (!tmp)
+			return (-1);
 		ft_strcpy(tmp, keep);
 	}
 	else
 	{
 		tmp = (char*)malloc(sizeof(char) * (BUFF_SIZE + 1));
+		if (!tmp)
+			return (-1);
 		ft_bzero(tmp, BUFF_SIZE + 1);
 	}
-	printf(">> tmp = %s at %p\n", tmp, tmp);
+//	printf(">> tmp = %s at %p\n", tmp, tmp);
 	buf = (char*)malloc(sizeof(char) * (BUFF_SIZE + 1));
+	if (!buf)
+		return (-1);
 	flag = 0;
 	while (!flag && (ret = read(fd, buf, BUFF_SIZE)))
 	{
 		if (ret == -1)
 			return (-1);
 		buf[BUFF_SIZE] = '\0';
+//		printf(">> buf = %s\n", buf);
 		tmp = my_extend(&tmp, &buf);
 		ft_bzero(buf, BUFF_SIZE);
 		if ((lentoeol = my_check_eol(tmp)) >= 0)
 			flag = 1;
-		printf(">> lentoeol = %d, tmp = %s\n", lentoeol, tmp);
+//		printf(">> lentoeol = %d, tmp = %s\n", lentoeol, tmp);
 	}
 	if (ret == 0 && !tmp)
 		return (0);
 	if (lentoeol == -1)
 		lentoeol = ft_strlen(tmp);
 	lline = (char*)malloc(sizeof(char) * lentoeol);
-	if (!line)
+	if (!lline)
 		return (-1);
 	*line = lline;
 //	printf(">> tmp = %s\n", tmp);
 	ft_strncpy(lline, tmp, lentoeol);
 	lline[lentoeol] = '\0';
-	printf(">> keep = %s at %p\n", keep, keep);
+//	printf(">> keep = %s at %p\n", keep, keep);
 	free(keep);
 	remain = ft_strlen(tmp) - lentoeol;
-	printf(">> ft_strlen(tmp) = %zd, lentoeol = %d, tmp = %s\n", ft_strlen(tmp), lentoeol, tmp);
+//	printf(">> ft_strlen(tmp) = %zd, lentoeol = %d, tmp = %s\n", ft_strlen(tmp), lentoeol, tmp);
 	keep = (char*)malloc(sizeof(char) * (remain));
+	if (!keep)
+		return (-1);
 	ft_strncpy(keep, &tmp[lentoeol + 1], remain);
-/*	printf("\n>> tmp = %s", tmp);
-	printf(">> keep = %s\n", keep);
-	printf(">> lline = %s\n", lline);
-*/	printf(">> buf = %s at %p\n", buf, buf);
+//	printf("\n>> tmp = %s", tmp);
+//	printf(">> keep = %s\n", keep);
+//	printf(">> lline = %s\n", lline);
+//	printf(">> buf = %s at %p\n", buf, buf);
 	free(buf);
 	if (ret == 0 && my_check_eol(tmp) == -1)
 		return (0);
-	printf(">> tmp = %s at %p\n", tmp, tmp);
+//	printf(">> tmp = %s at %p\n", tmp, tmp);
 	ft_bzero(tmp, ft_strlen(tmp));
-	printf(">> tmp = %s at %p\n", tmp, tmp);
+//	printf(">> tmp = %s at %p\n", tmp, tmp);
 	free(tmp);
 	return (1);
 }
